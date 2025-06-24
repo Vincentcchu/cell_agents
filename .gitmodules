@@ -1,0 +1,6 @@
+[submodule "BioMaster"]
+	path = BioMaster
+	url = https://github.com/Vincentcchu/BioMaster.git
+[submodule "bia"]
+	path = bia
+	url = https://github.com/Vincentcchu/bia.git
