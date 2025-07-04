@@ -4,3 +4,6 @@
 [submodule "bia"]
 	path = bia
 	url = https://github.com/Vincentcchu/bia.git
+[submodule "evaluator"]
+	path = evaluator
+	url = https://github.com/Vincentcchu/CellTypeEval.git
