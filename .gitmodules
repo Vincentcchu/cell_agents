@@ -7,3 +7,6 @@
 [submodule "evaluator"]
 	path = evaluator
 	url = https://github.com/Vincentcchu/CellTypeEval.git
+[submodule "CellTypeAgent"]
+	path = CellTypeAgent
+	url = https://github.com/jianghao-zhang/CellTypeAgent.git
