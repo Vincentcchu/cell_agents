@@ -10,3 +10,6 @@
 [submodule "CellTypeAgent"]
 	path = CellTypeAgent
 	url = https://github.com/jianghao-zhang/CellTypeAgent.git
+[submodule "CASSIA"]
+	path = CASSIA
+	url = https://github.com/ElliotXie/CASSIA
