@@ -13,3 +13,6 @@
 [submodule "CASSIA"]
 	path = CASSIA
 	url = https://github.com/ElliotXie/CASSIA
+[submodule "scMalignantFinder"]
+	path = scMalignantFinder
+	url = https://github.com/Jonyyqn/scMalignantFinder.git
