@@ -9,7 +9,7 @@ import os
 # You can customize logging if needed using the logging module
 
 # Load your single-cell RNA-seq dataset in AnnData format
-adata = sc.read_h5ad('dataset_debug_restricted.h5ad')  # Replace with your scRNA-seq dataset path
+adata = sc.read_h5ad('/cs/student/projects2/aisd/2024/shekchu/projects/cell_agents/remove_label/dataset_restricted.h5ad')  # Replace with your scRNA-seq dataset path
 
 # Perform Leiden clustering for cell population identification if not already done
 if 'leiden' not in adata.obs.columns:
@@ -56,27 +56,75 @@ for i in range(len(adata.obs['leiden'].cat.categories)):
 # id_mapping = {original: idx for idx, original in enumerate(original_ids)}
 # marker_genes = {str(id_mapping[cluster]): genes for cluster, genes in marker_genes.items()}
 
-# Configure API key for GPT-4o (only API key needed)
-os.environ["OPENAI_API_KEY"] = "***REMOVED***"  # Replace with your actual OpenAI API key
+# Configure API key for GPT-4o from JSON file
+import json
+
+# Load API key from external JSON file
+try:
+    with open('api_keys.json', 'r') as f:
+        api_key_data = json.load(f)
+    os.environ["OPENAI_API_KEY"] = api_key_data["openai_api_key"]
+except FileNotFoundError:
+    print("Error: api_keys.json file not found. Please create this file with your OpenAI API key.")
+    exit(1)
+except (KeyError, json.JSONDecodeError) as e:
+    print(f"Error reading API key from JSON file: {e}")
+    print("Make sure api_keys.json contains a valid JSON with 'openai_api_key' and 'openrouter_api_key' fields.")
+    exit(1)
 
 # Execute GPT-4o cell type annotation
-results = interactive_consensus_annotation(
-    marker_genes=marker_genes,  # Dictionary of marker genes for each cluster
-    species="human",            # Specify organism for appropriate cell type annotation
-    tissue="breast",            # Specify tissue context for more accurate annotation
-    models=["gpt-4o"],         # Use only GPT-4o
-    consensus_threshold=1,     # Since we're using only one model, threshold is 1
-    max_discussion_rounds=1    # Only one model, so only one round needed
+# results = interactive_consensus_annotation(
+#     marker_genes=marker_genes,  # Dictionary of marker genes for each cluster
+#     species="human",            # Specify organism for appropriate cell type annotation
+#     tissue="breast",            # Specify tissue context for more accurate annotation
+#     models=["gpt-4o"],         # Use only GPT-4o
+#     consensus_threshold=1,     # Since we're using only one model, threshold is 1
+#     max_discussion_rounds=1    # Only one model, so only one round needed
+# )
+
+# Set OpenRouter API key from the same JSON file
+try:
+    os.environ["OPENROUTER_API_KEY"] = api_key_data["openrouter_api_key"]
+except KeyError:
+    print("Warning: 'openrouter_api_key' not found in api_keys.json. OpenRouter models may not work correctly.")
+
+# Example using free OpenRouter models (no credits required)
+free_models_results = interactive_consensus_annotation(
+    marker_genes=marker_genes,
+    species="human",
+    tissue="blood",
+    models=[
+        {"provider": "openrouter", "model": "deepseek/deepseek-r1-0528:free"},      # Meta Llama 4 Maverick (free)
+        {"provider": "openrouter", "model": "moonshotai/kimi-k2:free"},  # NVIDIA Nemotron Ultra 253B (free)
+        {"provider": "openrouter", "model": "google/gemini-2.0-flash-exp:free"},   # DeepSeek Chat v3 (free)
+        {"provider": "openrouter", "model": "qwen/qwq-32b:free"}               # Microsoft MAI-DS-R1 (free)
+    ],
+    consensus_threshold=0.7,
+    max_discussion_rounds=2
+)
+
+top_models_results = interactive_consensus_annotation(
+    marker_genes=marker_genes,
+    species="human",
+    tissue="blood",
+    models=[
+        {"provider": "openrouter", "model": "anthropic/claude-sonnet-4"},   
+        {"provider": "openrouter", "model": "google/gemini-2.5-pro"},   
+        {"provider": "openrouter", "model": "qwen/qwen3-235b-a22b-2507:free"},
+        {"provider": "openrouter", "model": "openai/o4-mini"}
+    ],
+    consensus_threshold=0.7,
+    max_discussion_rounds=2
 )
 
 # Retrieve final cell type annotations from GPT-4o
-final_annotations = results["consensus"]
+final_annotations = free_models_results["consensus"]
 
 # Integrate cell type annotations into the original AnnData object
 adata.obs['gpt4o_cell_type'] = adata.obs['leiden'].astype(str).map(final_annotations)
 
 # Add confidence metrics (though with single model, these will be simpler)
-adata.obs['annotation_confidence'] = adata.obs['leiden'].astype(str).map(results["consensus_proportion"])
+adata.obs['annotation_confidence'] = adata.obs['leiden'].astype(str).map(free_models_results["consensus_proportion"])
 
 # Prepare for visualization: compute UMAP embeddings if not already available
 # UMAP provides a 2D representation of cell populations for visualization
@@ -119,5 +167,5 @@ for cluster, cell_type in final_annotations.items():
     print(f"Cluster {cluster}: {cell_type} ({cluster_size} cells)")
 
 # Save results
-adata.write('annotated_data_mllmcelltype.h5ad')
-print("\nAnnotated data saved to 'annotated_data_mllmcelltype.h5ad'")
+adata.write('mllm_free_models.h5ad')
+print("\nAnnotated data saved to 'mllm_free_models.h5ad'")

@@ -1,0 +1,27 @@
+Biomaster:
+o3 mini: 69,914
+o3: 77893 (failed)
+04-mini: 32566 (failed)
+
+o3 mini sarcoma
+start 75820
+
+mLLMCellType
+4o: 1259
+
+biomni
+4.1 failed
+4o failed
+
+claude sonnet
+run 1: 223465
+run 2: 237234
+run 3: 217878
+run 4: 277323
+run 5: 403652
+rub 6: 214936
+run 7(plan): 255732
+run 8 (sarcoma): 222999
+
+cassia:
+gpt 4o start 397313 666912

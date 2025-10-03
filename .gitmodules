@@ -16,3 +16,6 @@
 [submodule "scMalignantFinder"]
 	path = scMalignantFinder
 	url = https://github.com/Jonyyqn/scMalignantFinder.git
+[submodule "Biomni"]
+	path = Biomni
+	url = https://github.com/Vincentcchu/Biomni.git
