@@ -4,6 +4,9 @@
 [submodule "bia"]
 	path = bia
 	url = https://github.com/Vincentcchu/bia.git
+[submodule "evaluator"]
+	path = evaluator
+	url = https://github.com/Vincentcchu/CellTypeEval.git
 [submodule "CellTypeAgent"]
 	path = CellTypeAgent
 	url = https://github.com/jianghao-zhang/CellTypeAgent.git
@@ -16,6 +19,3 @@
 [submodule "Biomni"]
 	path = Biomni
 	url = https://github.com/Vincentcchu/Biomni.git
-[submodule "biomaster"]
-	path = biomaster
-	url = https://github.com/Vincentcchu/BioMaster.git
