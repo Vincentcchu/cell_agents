@@ -1,0 +1,51 @@
+
+===================prompt=====================
+
+
+Human: 
+    Determine whether the human cells in each row are malignant or non-malignant using the following markers separately 
+    for each row. Only provide the classification (malignant or non-malignant) for each row. The number of outputs should match 
+    the corresponding number of rows in the input. Answer for each row should start with the index number followed by a ': ' 
+    and then the classification.  
+    Here are the marker gene lists, organized row by row and separated by tissue types: 
+    
+breast cancer:
+64: IGF2,RPL30,RPL8,ALDOA,TCEA1,EEF1D,RBIS,PABPC1,UBE2V2,SDC2
+50: RPL39,CSTB,SLPI,DDIT4,KRT17,KRT14,ANXA2,TACSTD2,KRT6B,MT1X
+51: DDIT4,HMGB2,RHEB,CSTB,SLPI,STMN1,TACSTD2,ANXA2,RPL39L,UBE2C
+52: RPL35A,RPS7,RPS16,NACA,TSEN34,CDKN2A,RPL24,RPL18A,UQCRH,RPS23
+53: CD3E,HLA-C,H3-3B,MTCO2P12,RAC2,IFITM1,HLA-B,CORO1A,CD52,B2M
+54: COL1A1,COL1A2,COL3A1,COL6A2,SPARC,COL6A1,AEBP1,COL5A2,COL6A3,FN1
+55: GPX1,TYROBP,CD74,HLA-DRB1,SPI1,GABARAP,HLA-DPA1,CD68,FCER1G,LAPTM5
+56: MTCO2P12,H3-3A,ALDOA,H2AJ,H3-3B,MTRNR2L12,H1-0,RBIS,SEPTIN2,H2AZ1
+57: MZB1,SSR4,DERL3,ITM2C,FKBP11,SEC11C,CD79A,TENT5C,UBE2J1,IGHG1
+58: HSPG2,EGFL7,PECAM1,ENG,A2M,RAMP2,VWF,IGFBP7,COL4A1,PLVAP
+59: CD74,MS4A1,CD37,CD79A,MTCO2P12,CD52,HLA-DRB5,HLA-DPB1,HLA-DPA1,LIMD2
+60: FXYD5,VIM,H3-3B,TPSAB1,RAC2,MS4A2,CPA3,GATA2,HPGDS,TPSB2
+61: H3-3A,MTCO2P12,H3-3B,H2AJ,ALDOA,RBIS,NME2,H2AZ1,GABARAP,PABPC1
+62: LILRA4,IRF7,PLAC8,ITM2C,JCHAIN,GPX1,IRF8,CD74,CCDC50,GZMB
+63: H3-3A,MTCO2P12,RPS26,H3-3B,PPDPF,MTRNR2L12,GABARAP,ASAH1,CPB1,H2AJ
+ 
+
+Assistant:
+===================o3-mini-2025-01-31 response =====================
+64: malignant
+50: malignant
+51: malignant
+52: malignant
+53: non‐malignant
+54: non‐malignant
+55: non‐malignant
+56: malignant
+57: non‐malignant
+58: non‐malignant
+59: non‐malignant
+60: non‐malignant
+61: malignant
+62: non‐malignant
+63: malignant
+===================tokens=====================
+Number of prompt tokens: 759
+Number of sampled tokens: 91
+
+
