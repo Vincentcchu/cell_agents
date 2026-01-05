@@ -1,18 +1,18 @@
 [submodule "BioMaster"]
-	path = agents/biomaster
+	path = BioMaster
 	url = https://github.com/Vincentcchu/BioMaster.git
 [submodule "bia"]
-	path = agents/bia
+	path = bia
 	url = https://github.com/Vincentcchu/bia.git
 [submodule "CellTypeAgent"]
-	path = agents/CellTypeAgent
+	path = CellTypeAgent
 	url = https://github.com/jianghao-zhang/CellTypeAgent.git
 [submodule "CASSIA"]
-	path = agents/CASSIA
+	path = CASSIA
 	url = https://github.com/ElliotXie/CASSIA
 [submodule "scMalignantFinder"]
-	path = agents/scMalignantFinder
+	path = scMalignantFinder
 	url = https://github.com/Jonyyqn/scMalignantFinder.git
 [submodule "Biomni"]
-	path = agents/Biomni
+	path = Biomni
 	url = https://github.com/Vincentcchu/Biomni.git
