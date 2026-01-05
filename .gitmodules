@@ -6,13 +6,10 @@
 	url = https://github.com/Vincentcchu/bia.git
 [submodule "CellTypeAgent"]
 	path = CellTypeAgent
-	url = https://github.com/jianghao-zhang/CellTypeAgent.git
+	url = https://github.com/Vincentcchu/CellTypeAgent.git
 [submodule "CASSIA"]
 	path = CASSIA
-	url = https://github.com/ElliotXie/CASSIA
-[submodule "scMalignantFinder"]
-	path = scMalignantFinder
-	url = https://github.com/Jonyyqn/scMalignantFinder.git
+	url = https://github.com/Vincentcchu/CASSIA.git
 [submodule "Biomni"]
 	path = Biomni
 	url = https://github.com/Vincentcchu/Biomni.git
