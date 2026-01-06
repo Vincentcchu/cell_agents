@@ -9,7 +9,7 @@ import os
 # You can customize logging if needed using the logging module
 
 # Load your single-cell RNA-seq dataset in AnnData format
-adata = sc.read_h5ad('/cs/student/projects2/aisd/2024/shekchu/projects/cell_agents/remove_label/dataset_restricted.h5ad')  # Replace with your scRNA-seq dataset path
+adata = sc.read_h5ad('../../data/dataset_restricted.h5ad')  # Replace with your scRNA-seq dataset path
 
 # Perform Leiden clustering for cell population identification if not already done
 if 'leiden' not in adata.obs.columns:
