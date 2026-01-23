@@ -13,3 +13,6 @@
 [submodule "Biomni"]
 	path = Biomni
 	url = https://github.com/Vincentcchu/Biomni.git
+[submodule "agents/STELLA"]
+	path = agents/STELLA
+	url = https://github.com/Vincentcchu/STELLA
