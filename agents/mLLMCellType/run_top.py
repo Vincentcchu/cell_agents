@@ -72,36 +72,12 @@ except (KeyError, json.JSONDecodeError) as e:
     print("Make sure api_keys.json contains a valid JSON with 'openai_api_key' and 'openrouter_api_key' fields.")
     exit(1)
 
-# Execute GPT-4o cell type annotation
-# results = interactive_consensus_annotation(
-#     marker_genes=marker_genes,  # Dictionary of marker genes for each cluster
-#     species="human",            # Specify organism for appropriate cell type annotation
-#     tissue="breast",            # Specify tissue context for more accurate annotation
-#     models=["gpt-4o"],         # Use only GPT-4o
-#     consensus_threshold=1,     # Since we're using only one model, threshold is 1
-#     max_discussion_rounds=1    # Only one model, so only one round needed
-# )
-
 # Set OpenRouter API key from the same JSON file
 try:
     os.environ["OPENROUTER_API_KEY"] = api_key_data["openrouter_api_key"]
 except KeyError:
     print("Warning: 'openrouter_api_key' not found in api_keys.json. OpenRouter models may not work correctly.")
 
-# Example using free OpenRouter models (no credits required)
-free_models_results = interactive_consensus_annotation(
-    marker_genes=marker_genes,
-    species="human",
-    tissue="blood",
-    models=[
-        {"provider": "openrouter", "model": "deepseek/deepseek-r1-0528:free"},      # Meta Llama 4 Maverick (free)
-        {"provider": "openrouter", "model": "moonshotai/kimi-k2:free"},  # NVIDIA Nemotron Ultra 253B (free)
-        {"provider": "openrouter", "model": "google/gemini-2.0-flash-exp:free"},   # DeepSeek Chat v3 (free)
-        {"provider": "openrouter", "model": "qwen/qwq-32b:free"}               # Microsoft MAI-DS-R1 (free)
-    ],
-    consensus_threshold=0.7,
-    max_discussion_rounds=2
-)
 
 top_models_results = interactive_consensus_annotation(
     marker_genes=marker_genes,

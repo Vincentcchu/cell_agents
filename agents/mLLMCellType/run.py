@@ -9,7 +9,7 @@ import os
 # You can customize logging if needed using the logging module
 
 # Load your single-cell RNA-seq dataset in AnnData format
-adata = sc.read_h5ad('../../data/dataset_restricted.h5ad')  # Replace with your scRNA-seq dataset path
+adata = sc.read_h5ad('/cs/student/projects2/aisd/2024/shekchu/projects/data/breast/h5ad_l3/Data_Bassez2021_Breast_l3.h5ad')  # Replace with your scRNA-seq dataset path
 
 # Perform Leiden clustering for cell population identification if not already done
 if 'leiden' not in adata.obs.columns:
@@ -72,16 +72,6 @@ except (KeyError, json.JSONDecodeError) as e:
     print("Make sure api_keys.json contains a valid JSON with 'openai_api_key' and 'openrouter_api_key' fields.")
     exit(1)
 
-# Execute GPT-4o cell type annotation
-# results = interactive_consensus_annotation(
-#     marker_genes=marker_genes,  # Dictionary of marker genes for each cluster
-#     species="human",            # Specify organism for appropriate cell type annotation
-#     tissue="breast",            # Specify tissue context for more accurate annotation
-#     models=["gpt-4o"],         # Use only GPT-4o
-#     consensus_threshold=1,     # Since we're using only one model, threshold is 1
-#     max_discussion_rounds=1    # Only one model, so only one round needed
-# )
-
 # Set OpenRouter API key from the same JSON file
 try:
     os.environ["OPENROUTER_API_KEY"] = api_key_data["openrouter_api_key"]
@@ -94,28 +84,15 @@ free_models_results = interactive_consensus_annotation(
     species="human",
     tissue="blood",
     models=[
-        {"provider": "openrouter", "model": "deepseek/deepseek-r1-0528:free"},      # Meta Llama 4 Maverick (free)
-        {"provider": "openrouter", "model": "moonshotai/kimi-k2:free"},  # NVIDIA Nemotron Ultra 253B (free)
-        {"provider": "openrouter", "model": "google/gemini-2.0-flash-exp:free"},   # DeepSeek Chat v3 (free)
-        {"provider": "openrouter", "model": "qwen/qwq-32b:free"}               # Microsoft MAI-DS-R1 (free)
+        {"provider": "openrouter", "model": "openai/gpt-4o-mini"},      # Meta Llama 4 Maverick (free)
+        # {"provider": "openrouter", "model": "moonshotai/kimi-k2:free"},  # NVIDIA Nemotron Ultra 253B (free)
+        # {"provider": "openrouter", "model": "google/gemini-2.0-flash-exp:free"},   # DeepSeek Chat v3 (free)
+        # {"provider": "openrouter", "model": "qwen/qwq-32b:free"}               # Microsoft MAI-DS-R1 (free)
     ],
     consensus_threshold=0.7,
     max_discussion_rounds=2
 )
 
-top_models_results = interactive_consensus_annotation(
-    marker_genes=marker_genes,
-    species="human",
-    tissue="blood",
-    models=[
-        {"provider": "openrouter", "model": "anthropic/claude-sonnet-4"},   
-        {"provider": "openrouter", "model": "google/gemini-2.5-pro"},   
-        {"provider": "openrouter", "model": "qwen/qwen3-235b-a22b-2507:free"},
-        {"provider": "openrouter", "model": "openai/o4-mini"}
-    ],
-    consensus_threshold=0.7,
-    max_discussion_rounds=2
-)
 
 # Retrieve final cell type annotations from GPT-4o
 final_annotations = free_models_results["consensus"]
@@ -136,27 +113,27 @@ if 'X_umap' not in adata.obsm:
     sc.tl.umap(adata)
     print("UMAP coordinates computed")
 
-# Visualize results
-import matplotlib.pyplot as plt
+# # Visualize results
+# import matplotlib.pyplot as plt
 
-# Set figure size and style
-plt.rcParams['figure.figsize'] = (10, 8)
-plt.rcParams['font.size'] = 12
+# # Set figure size and style
+# plt.rcParams['figure.figsize'] = (10, 8)
+# plt.rcParams['font.size'] = 12
 
-# Create UMAP visualization
-fig, ax = plt.subplots(1, 1, figsize=(12, 10))
-sc.pl.umap(adata, color='gpt4o_cell_type', legend_loc='on data',
-         frameon=True, title='GPT-4o Cell Type Annotations',
-         palette='tab20', size=50, legend_fontsize=12,
-         legend_fontoutline=2, ax=ax)
+# # Create UMAP visualization
+# fig, ax = plt.subplots(1, 1, figsize=(12, 10))
+# sc.pl.umap(adata, color='gpt4o_cell_type', legend_loc='on data',
+#          frameon=True, title='GPT-4o Cell Type Annotations',
+#          palette='tab20', size=50, legend_fontsize=12,
+#          legend_fontoutline=2, ax=ax)
 
-# Optional: visualize confidence scores
-fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-sc.pl.umap(adata, color='annotation_confidence', ax=ax, title='Annotation Confidence',
-         cmap='viridis', vmin=0, vmax=1, size=30)
+# # Optional: visualize confidence scores
+# fig, ax = plt.subplots(1, 1, figsize=(10, 8))
+# sc.pl.umap(adata, color='annotation_confidence', ax=ax, title='Annotation Confidence',
+#          cmap='viridis', vmin=0, vmax=1, size=30)
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
 # Print summary of annotations
 print("\nCell Type Annotation Summary:")
