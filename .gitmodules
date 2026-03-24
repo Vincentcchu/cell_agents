@@ -4,9 +4,6 @@
 [submodule "bia"]
 	path = bia
 	url = https://github.com/Vincentcchu/bia.git
-[submodule "CellTypeAgent"]
-	path = CellTypeAgent
-	url = https://github.com/Vincentcchu/CellTypeAgent.git
 [submodule "CASSIA"]
 	path = CASSIA
 	url = https://github.com/Vincentcchu/CASSIA.git
@@ -16,3 +13,6 @@
 [submodule "agents/STELLA"]
 	path = agents/STELLA
 	url = https://github.com/Vincentcchu/STELLA
+[submodule "agents/CellTypeAgent"]
+	path = agents/CellTypeAgent
+	url = https://github.com/Vincentcchu/CellTypeAgent.git
