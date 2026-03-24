@@ -16,3 +16,4 @@ __pycache__/
 
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/
+agents/CellTypeAgent/APIs/openai_api_key.txt

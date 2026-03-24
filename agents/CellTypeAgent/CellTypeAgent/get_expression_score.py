@@ -32,6 +32,7 @@ expression_file_names = {
     'BCL': ['BCL_CELLxGENE_gene_expression_102124.csv'],
     'lungcancer': ['lungcancer_CELLxGENE_gene_expression_101824.csv'],
     'coloncancer': ['coloncancer_CELLxGENE_gene_expression_101824.csv'],
+    'brain_cancer': ['Brain_cancer.csv'],
 }
 
 data_to_expression_tissue_map = {
@@ -113,6 +114,9 @@ data_to_expression_tissue_map = {
     },
     'coloncancer': {
         'colon cancer': 'colon'
+    },
+    'brain_cancer': {
+        'brain cancer': 'brain',
     },
 }
 

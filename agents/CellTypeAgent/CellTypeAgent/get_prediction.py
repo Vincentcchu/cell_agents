@@ -5,6 +5,7 @@ from utils import data_info
 from LLM import complete_text
 from utils import standardize_cell_type
 from eval import match_CLID, match_CL_info
+from run_metrics import RunMetricsTracker, set_active_run_tracker, clear_active_run_tracker
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -30,32 +31,32 @@ def create_predicition_prompt(dataset_name, number_of_candidates=3, data_dir='da
     poor_performance_model_prompt = f"Do remember that each row must contain exactly {number_of_candidates} cell types." if poor_performance_model else ""
 
     base_prompt = f"""
-    Determine whether the {species} cells in each row are malignant or non-malignant using the following markers separately 
-    for each row. Only provide the classification (malignant or non-malignant) for each row. The number of outputs should match 
-    the corresponding number of rows in the input. Answer for each row should start with the index number followed by a ': ' 
-    and then the classification. {poor_performance_model_prompt} {prompt_suffix}
-    Here are the marker gene lists, organized row by row{tissue_prompt}: 
+    Identify most likely top {number_of_candidates} cell types of {species} cells using the following markers separately for each row. Only provide the lists of top {number_of_candidates} cell type names row by row. The higher the probability, the further left it is ranked, separated by commas. The number of lists should match the corresponding number of rows in the input. Answer for each row should start with the index number followed by a ': ' and then the predicted cell type names. {poor_performance_model_prompt}
+    {prompt_suffix}
+
+    Here are the marker gene lists, organized row by row{tissue_prompt}:
     """
+    
     if has_tissues:
         for tissue in data['tissue'].unique():
             marker_lists = []
             tissue_data = data[data['tissue'] == tissue]
             base_prompt += f"\n{tissue}:\n"
-            for _, row in tissue_data.iterrows():
+            for row_idx, row in tissue_data.iterrows():
                 markers_num = len(row['marker'].split(','))
                 markers = row['marker'].split(',')[:min(max_markers, markers_num)] if max_markers else row['marker'].split(',')
                 marker_list = ','.join(markers)
-                marker_lists.append(f"{int(row.name)}: {marker_list}")
+                marker_lists.append(f"{row_idx}: {marker_list}")
 
             marker_lists.append("")
             base_prompt += "\n".join(marker_lists)
     else:
         marker_lists = []
-        for _, row in data.iterrows():
+        for row_idx, row in data.iterrows():
             markers_num = len(row['marker'].split(','))
             markers = row['marker'].split(',')[:min(max_markers, markers_num)] if max_markers else row['marker'].split(',')
             marker_list = ','.join(markers)
-            marker_lists.append(f"{int(row.name)}: {marker_list}")
+            marker_lists.append(f"{row_idx}: {marker_list}")
         base_prompt += "\n".join(marker_lists)
 
     print(base_prompt)
@@ -138,7 +139,8 @@ def filter_predictions(predictions):
     return predictions
 
 def get_prediction(model, dataset_name, number_of_candidates=3, data_dir='data/GPTCellType/datasets', cl=cl,
-                    log_dir='logs/selection_mode', poor_performance_model=False, max_markers=None, prompt_suffix="", species=None):
+                    log_dir='logs/selection_mode', poor_performance_model=False, max_markers=None, prompt_suffix="", species=None,
+                    input_cost_per_million=1.1, output_cost_per_million=4.4):
     date = time.strftime("%Y%m%d-%H%M%S", time.localtime())
     log_dir = os.path.join(SCRIPT_DIR, log_dir, dataset_name, 'prediction', model, date)
     if not os.path.exists(log_dir):
@@ -153,31 +155,65 @@ def get_prediction(model, dataset_name, number_of_candidates=3, data_dir='data/G
     else:
         open_reasoning = False
 
+    tracker = RunMetricsTracker(
+        run_name="get_prediction",
+        model=model,
+        metadata={
+            "dataset_name": dataset_name,
+            "number_of_candidates": number_of_candidates,
+            "num_samples": num_samples,
+            "segment_size": segment_size,
+            "max_markers": max_markers,
+            "log_dir": log_dir,
+        },
+        input_cost_per_million=input_cost_per_million,
+        output_cost_per_million=output_cost_per_million,
+    )
+    set_active_run_tracker(tracker)
+
     missing_indices = []
-    for i in range(0, num_samples, segment_size):
-        end_idx = min(i + segment_size, num_samples)
-        index_to_predict = list(set(list(data.index[i:end_idx]) + missing_indices))
-        prediction_prompt = create_predicition_prompt(dataset_name, number_of_candidates, index_to_predict=index_to_predict, poor_performance_model=poor_performance_model, max_markers=max_markers, prompt_suffix=prompt_suffix, species=species, data_dir=data_dir)
-        prediction = complete_text(prediction_prompt, log_file=os.path.join(log_dir, f'{i}-{end_idx}.log'), model=model)
-        data, missing_indices = parse_prediction(prediction, data, end_idx=end_idx, open_reasoning=open_reasoning)
+    run_metrics = None
+    end_idx = 0
+    try:
+        for i in range(0, num_samples, segment_size):
+            end_idx = min(i + segment_size, num_samples)
+            index_to_predict = list(set(list(data.index[i:end_idx]) + missing_indices))
+            prediction_prompt = create_predicition_prompt(dataset_name, number_of_candidates, index_to_predict=index_to_predict, poor_performance_model=poor_performance_model, max_markers=max_markers, prompt_suffix=prompt_suffix, species=species, data_dir=data_dir)
+            prediction = complete_text(prediction_prompt, log_file=os.path.join(log_dir, f'{i}-{end_idx}.log'), model=model)
+            data, missing_indices = parse_prediction(prediction, data, end_idx=end_idx, open_reasoning=open_reasoning)
 
-    if len(missing_indices) != 0:
-        prediction_prompt = create_predicition_prompt(dataset_name, number_of_candidates, index_to_predict=missing_indices, poor_performance_model=poor_performance_model, prompt_suffix=prompt_suffix, species=species, data_dir=data_dir)
-        prediction = complete_text(prediction_prompt, log_file=os.path.join(log_dir, f'missing_indices.log'), model=model)
-        data, missing_indices = parse_prediction(prediction, data, end_idx=end_idx, open_reasoning=open_reasoning)
+        if len(missing_indices) != 0:
+            prediction_prompt = create_predicition_prompt(dataset_name, number_of_candidates, index_to_predict=missing_indices, poor_performance_model=poor_performance_model, prompt_suffix=prompt_suffix, species=species, data_dir=data_dir)
+            prediction = complete_text(prediction_prompt, log_file=os.path.join(log_dir, f'missing_indices.log'), model=model)
+            data, missing_indices = parse_prediction(prediction, data, end_idx=end_idx, open_reasoning=open_reasoning)
 
-    data = filter_predictions(data)
-    data['cell_type_pred_CLname'] = None
-    data = get_CLname(data, cl)
-    data.to_csv(os.path.join(log_dir, f'{dataset_name}.csv'), index=False)
+        data = filter_predictions(data)
+        data['cell_type_pred_CLname'] = None
+        data = get_CLname(data, cl)
+        data.to_csv(os.path.join(log_dir, f'{dataset_name}.csv'), index=False)
+
+        run_metrics = tracker.save_json(os.path.join(log_dir, 'run_metrics.json'))
+        tracker.append_summary_csv(os.path.join(log_dir, 'run_metrics_summary.csv'), finalized=run_metrics)
+
+    finally:
+        clear_active_run_tracker()
+
+    if run_metrics is not None:
+        print(
+            f"Run metrics | total_time={run_metrics['total_time_seconds']}s, "
+            f"preprocessing_time={run_metrics['preprocessing_time_seconds']}s, "
+            f"annotation_time={run_metrics['annotation_time_seconds']}s, "
+            f"input_tokens={run_metrics['input_tokens']}, "
+            f"output_tokens={run_metrics['output_tokens']}, "
+            f"total_cost_usd=${run_metrics['total_cost_usd']:.6f}"
+        )
 
     return data, os.path.join(log_dir, f'{dataset_name}.csv')
 
 if __name__ == "__main__":
-    # datasets = ['coloncancer', 'BCL']  #'lungcancer', 'literature', 'HCA', 'HCL', 'MCA', 'Azimuth', 'tabulasapiens']
-    datasets = ['dataset_restricted_formatted']
+    datasets = ['coloncancer', 'BCL', 'lungcancer', 'literature', 'HCA', 'HCL', 'MCA', 'Azimuth', 'tabulasapiens']
     for dataset_name in datasets:
-        model, dataset_name, top_n, max_markers = 'o3-mini-2025-01-31', dataset_name, 3, None
+        model, dataset_name, top_n, max_markers = 'o4-mini-2025-04-16', dataset_name, 3, None
         data_dir = 'data/GPTCellType/datasets'
         log_dir = f'data/GPTCellType/datasets/{model}/top_{top_n}'
         path_to_saved_prediction = f"analysis/{model}/{dataset_name}"

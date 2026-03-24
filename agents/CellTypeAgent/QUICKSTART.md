@@ -55,12 +55,44 @@ cd agents/celltypeagent/CellTypeAgent
 # Run according to CellTypeAgent documentation
 ```
 
+### Batch automation across all tissues
+
+If your formatted files are organized as:
+
+```text
+data/<tissue>/celltypeagent_format/*_formatted.csv
+```
+
+you can run all datasets without manually editing `get_prediction.py`:
+
+```bash
+cd cell_agents/agents/CellTypeAgent
+python run_all_tissues.py --model gpt-5.1 --species human
+```
+
+Useful options:
+
+```bash
+# Only selected tissues
+python run_all_tissues.py --tissues brain breast
+
+# Resume from a dataset
+python run_all_tissues.py --start-from brain/Data_Choudhury2022_Brain_formatted
+
+# Skip datasets already processed for this model
+python run_all_tissues.py --skip-existing
+```
+
 ## Output
 
 Results are saved to:
-- **Default location**: `../../outputs/celltypeagent/`
-- **Output format**: Cell type predictions with confidence scores
-- **Includes**: Annotation results, analysis logs
+- **Default location**: `batch_outputs/`
+- **Organized by**: `batch_outputs/<tissue>/<dataset>/...`
+- **Includes**:
+   - prediction CSVs and logs from CellTypeAgent
+   - `run_metrics.json` (timing/tokens/cost)
+   - `top_<n>_max_<markers>.txt` per dataset
+   - batch-level summaries: `BATCH_SUMMARY.json` and `BATCH_SUMMARY.csv`
 
 ## Notes
 

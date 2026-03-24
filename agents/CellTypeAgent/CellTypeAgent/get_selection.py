@@ -16,7 +16,7 @@ hier = pd.read_csv(os.path.join(SCRIPT_DIR, 'data/GPTCellType/src/relation.csv')
 expression_dir = os.path.join(SCRIPT_DIR, "data/CELLxGENE")
 data_dir = os.path.join(SCRIPT_DIR, "data/GPTCellType/datasets")
 saved_prediction_dir = os.path.join(SCRIPT_DIR, "analysis/o1-preview (for reproduce)")
-data_file_names = ['BCL', 'coloncancer', 'lungcancer', 'literature', 'HCA', 'HCL', 'MCA', 'Azimuth', 'tabulasapiens']
+data_file_names = ['BCL', 'coloncancer', 'lungcancer', 'literature', 'HCA', 'HCL', 'MCA', 'Azimuth', 'tabulasapiens', 'brain_cancer']
 no_tissue_data_names = ['HCL', 'MCA', 'BCL']
 
 expression_file_names = {
@@ -43,6 +43,7 @@ expression_file_names = {
     'BCL': ['BCL_CELLxGENE_gene_expression_102124.csv'],
     'lungcancer': ['lungcancer_CELLxGENE_gene_expression_101824.csv'],
     'coloncancer': ['coloncancer_CELLxGENE_gene_expression_101824.csv'],
+    'brain_cancer': ['Brain_cancer.csv'],
 }
 
 data_to_expression_tissue_map = {
@@ -124,6 +125,9 @@ data_to_expression_tissue_map = {
     },
     'coloncancer': {
         'colon cancer': 'colon'
+    },
+    'brain_cancer': {
+        'brain cancer': 'brain',
     },
 }
 
@@ -581,9 +585,9 @@ if __name__ == "__main__":
     results = {}
     all_data = []
     n_sample_per_mixture_pair = 1
-    model = 'o1-preview'
+    model = 'gpt-5.1-2025-11-13'
 
-    data_file_names = ['coloncancer', 'BCL', 'lungcancer', 'literature', 'HCA', 'HCL', 'MCA', 'Azimuth', 'tabulasapiens']
+    data_file_names = ['coloncancer', 'BCL', 'lungcancer', 'literature', 'HCA', 'HCL', 'MCA', 'Azimuth', 'tabulasapiens', 'brain_cancer']
 
     for dataset_name in data_file_names:
         print(f"Processing dataset: {dataset_name}")

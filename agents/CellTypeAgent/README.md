@@ -37,6 +37,31 @@ python CellTypeAgent/get_prediction.py
 python CellTypeAgent/get_selection.py
 ```
 
+## Run Metrics and Cost Tracking
+
+`get_prediction()` now records per-run metrics automatically.
+
+- Metrics JSON: `.../prediction/<model>/<timestamp>/run_metrics.json`
+- Metrics CSV summary: `.../prediction/<model>/<timestamp>/run_metrics_summary.csv`
+
+The metrics include:
+
+- `preprocessing_time_seconds`
+- `annotation_time_seconds` (sum of LLM API latency)
+- `total_time_seconds`
+- `input_tokens`, `output_tokens`, `total_tokens`
+- `input_cost_usd`, `output_cost_usd`, `total_cost_usd`
+
+Default pricing is configured as:
+
+- input: `$1.1` per 1M input tokens
+- output: `$4.4` per 1M output tokens
+
+You can override pricing when calling `get_prediction()` via:
+
+- `input_cost_per_million`
+- `output_cost_per_million`
+
 ## Adapting the Framework to Custom Datasets
 
 To utilize CellTypeAgent with your own datasets, follow these steps:

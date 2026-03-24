@@ -1,0 +1,38 @@
+{
+  "run_name": "get_prediction",
+  "model": "gpt-5.1",
+  "started_at_unix": 1774353313.8530352,
+  "started_at_iso": "2026-03-24T11:55:13Z",
+  "num_llm_calls": 1,
+  "input_tokens": 869,
+  "output_tokens": 345,
+  "total_tokens": 1214,
+  "annotation_time_seconds": 3.242479,
+  "preprocessing_time_seconds": 0.896902,
+  "total_time_seconds": 4.139381,
+  "input_cost_per_million": 1.1,
+  "output_cost_per_million": 4.4,
+  "input_cost_usd": 0.0009559,
+  "output_cost_usd": 0.001518,
+  "total_cost_usd": 0.0024739,
+  "metadata": {
+    "dataset_name": "Data_Filbin2018_Brain_formatted",
+    "number_of_candidates": 3,
+    "num_samples": 19,
+    "segment_size": 50,
+    "max_markers": null,
+    "log_dir": "/cs/student/projects2/aisd/2024/shekchu/projects/cell_agents/agents/CellTypeAgent/batch_outputs/brain/Data_Filbin2018_Brain_formatted/prediction/gpt-5.1/20260324-115513"
+  },
+  "llm_calls": [
+    {
+      "provider": "openai",
+      "model": "gpt-5.1",
+      "input_tokens": 869,
+      "output_tokens": 345,
+      "total_tokens": 1214,
+      "latency_seconds": 3.2424785809998866,
+      "log_file": "/cs/student/projects2/aisd/2024/shekchu/projects/cell_agents/agents/CellTypeAgent/batch_outputs/brain/Data_Filbin2018_Brain_formatted/prediction/gpt-5.1/20260324-115513/0-19.log",
+      "call_started_unix": 1774353313.8630247
+    }
+  ]
+}
