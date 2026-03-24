@@ -16,3 +16,6 @@
 [submodule "agents/CellTypeAgent"]
 	path = agents/CellTypeAgent
 	url = https://github.com/Vincentcchu/CellTypeAgent.git
+[submodule "agents/mLLMCellType"]
+	path = agents/mLLMCellType
+	url = https://github.com/Vincentcchu/mLLMCellType.git
